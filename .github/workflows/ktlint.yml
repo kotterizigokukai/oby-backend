@@ -26,7 +26,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Run ktlint check
-        run: ./gradlew ktlintCheck
+        run: ./gradlew ktlintCheck -Dorg.gradle.java.home=$JAVA_HOME
 
       - name: Upload ktlint reports
         if: failure()
