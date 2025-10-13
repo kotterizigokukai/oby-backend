@@ -1,4 +1,3 @@
-// Message.kt
-package com.example.demo
+package com.example.obybackend
 
 data class Message(val id: String?, val text: String)
