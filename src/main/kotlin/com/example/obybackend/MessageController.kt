@@ -27,7 +27,7 @@ class MessageController(
 
     @GetMapping("/{id}")
     fun getMessage(
-        @PathVariable id: String,
+        @PathVariable id: java.util.UUID,
     ): ResponseEntity<Message> = service.findMessageById(id).toResponseEntity()
 
     private fun Message?.toResponseEntity(): ResponseEntity<Message> =
