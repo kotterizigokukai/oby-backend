@@ -110,7 +110,14 @@ cp .env.example .env
 
 ### API仕様
 
-（TODO: API仕様を追加）
+アプリケーション起動後、以下のURLでAPIを確認・テストできます：
+
+- **Swagger UI**: http://localhost:8080/swagger-ui.html
+  - ブラウザでAPIをインタラクティブにテスト可能
+- **OpenAPI仕様**: http://localhost:8080/v3/api-docs
+  - フロントエンドのorvalがこのエンドポイントから型を自動生成
+
+詳細は [docs/orval-api-guidelines.md](docs/orval-api-guidelines.md) を参照してください。
 
 ## CI/CD
 
