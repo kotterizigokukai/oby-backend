@@ -1,5 +1,7 @@
 package com.example.obybackend
 
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -11,13 +13,16 @@ import java.net.URI
 
 @RestController
 @RequestMapping("/")
+@Tag(name = "Messages", description = "メッセージ管理API")
 class MessageController(
     private val service: MessageService,
 ) {
     @GetMapping
+    @Operation(operationId = "listMessages", summary = "メッセージ一覧取得")
     fun listMessages() = ResponseEntity.ok(service.findMessages())
 
     @PostMapping
+    @Operation(operationId = "createMessage", summary = "メッセージ作成")
     fun post(
         @RequestBody message: Message,
     ): ResponseEntity<Message> {
@@ -26,6 +31,7 @@ class MessageController(
     }
 
     @GetMapping("/{id}")
+    @Operation(operationId = "getMessageById", summary = "メッセージ取得")
     fun getMessage(
         @PathVariable id: java.util.UUID,
     ): ResponseEntity<Message> = service.findMessageById(id).toResponseEntity()
