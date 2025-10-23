@@ -1,6 +1,23 @@
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
-CREATE TABLE IF NOT EXISTS messages (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    text VARCHAR NOT NULL
+CREATE TABLE IF NOT EXISTS app_user (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    provider VARCHAR(32) NOT NULL,
+    provider_subject VARCHAR(128) NOT NULL,
+    email VARCHAR(320) NOT NULL,
+    display_name VARCHAR(255) NOT NULL,
+    avatar_url TEXT,
+    role VARCHAR(32) NOT NULL,
+    last_login_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    CONSTRAINT uq_provider_subject UNIQUE (provider, provider_subject),
+    CONSTRAINT uq_user_email UNIQUE (email)
+);
+
+CREATE TABLE IF NOT EXISTS message (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    body TEXT NOT NULL,
+    author VARCHAR(255) NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
