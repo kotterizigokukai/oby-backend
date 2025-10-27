@@ -33,7 +33,8 @@ class CustomOidcUserService(
 
         logger.debug("Authenticated Google user {} mapped to internal id {}", subject, account.id)
 
-        val authorities = setOf(SimpleGrantedAuthority("ROLE_${account.role.name}"))
+        // DBに保存している役割をSpring Securityの権限へマッピング
+        val authorities = setOf(SimpleGrantedAuthority(account.role.asAuthority()))
 
         val userInfo = oidcUser.userInfo
         return if (userInfo != null) {
