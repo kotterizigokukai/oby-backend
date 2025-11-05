@@ -73,10 +73,11 @@ src/main/kotlin/com/example/obybackend/
 │       └── xxxOutput.kt           # 出力DTO
 │
 ├── infrastructure/                 # インフラストラクチャ層(最外部)
-│   ├── persistence/               # 永続化
-│   │   ├── repository/           # リポジトリ実装
-│   │   ├── model/                # データベースモデル
-│   │   └── mapper/               # ドメイン ⟷ 永続化モデルの変換
+│   ├── postgres_jdbc/             # PostgreSQL + JDBC
+│   │   └── {機能名}/              # 機能ごとのディレクトリ
+│   │       ├── {機能名}Repository.kt  # リポジトリ実装
+│   │       ├── {機能名}Table.kt       # データベースモデル
+│   │       └── {機能名}Mapper.kt      # ドメイン ⟷ DBモデルの変換
 │   └── config/                    # Spring設定
 │
 └── presentation/                   # プレゼンテーション層(最外部)
@@ -104,10 +105,13 @@ src/main/kotlin/com/example/obybackend/
 
 ### Infrastructure 層
 
-- **persistence/repository/**: Repository インターフェースの実装
-- **persistence/model/**: DB テーブルに対応するクラス(@Table, @Id など)
-- **persistence/mapper/**: ドメインエンティティ ⟷ DB モデルの変換
+- **postgres_jdbc/{機能名}/**: 機能ごとのディレクトリ(例: user/, message/)
+  - **{機能名}Repository.kt**: Repository インターフェースの実装
+  - **{機能名}Table.kt**: DB テーブルに対応するクラス(@Table, @Id など)
+  - **{機能名}Mapper.kt**: ドメインエンティティ ⟷ DB モデルの変換
 - **config/**: Spring 設定、Bean 定義
+
+将来的に Redis などの他のデータストアを追加する場合は、`redis/` のようなディレクトリを追加します。
 
 ### Presentation 層
 
@@ -161,8 +165,8 @@ fun createUser(request: CreateUserRequest) // これはNG
 | Entity                    | 名詞                       | `User`, `Message`, `Profile` |
 | Value Object              | 名詞                       | `Email`, `UserId`, `Money`   |
 | Repository Interface      | `{Entity名}Repository`     | `UserRepository`             |
-| Repository Implementation | `Jdbc{Entity名}Repository` | `JdbcUserRepository`         |
-| Persistence Model         | `{Entity名}Table`          | `UserTable`                  |
+| Repository Implementation | `{機能名}Repository`       | `UserRepository`             |
+| DB Model                  | `{機能名}Table`            | `UserTable`                  |
 | Domain Service            | `{目的}Service`            | `UserAuthenticationService`  |
 | UseCase                   | `{機能名}UseCase`          | `UserUseCase`                |
 | Input                     | `{操作名}Input`            | `CreateUserInput`            |
@@ -170,7 +174,7 @@ fun createUser(request: CreateUserRequest) // これはNG
 | Controller                | `{機能名}Controller`       | `UserController`             |
 | Request                   | `{操作名}Request`          | `CreateUserRequest`          |
 | Response                  | `{Entity名}Response`       | `UserResponse`               |
-| Mapper                    | `{Entity名}Mapper`         | `UserMapper`                 |
+| Mapper                    | `{機能名}Mapper`           | `UserMapper`                 |
 
 ### ファイル配置
 
