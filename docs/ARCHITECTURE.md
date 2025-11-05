@@ -13,48 +13,9 @@
 
 ## アーキテクチャ構造
 
-### 全体構造図イメージ
+### オニオンアーキテクチャイメージ
 
-```mermaid
-graph TD
-    subgraph "Presentation Layer (最外部)"
-        Controller[Controller]
-        Request[Request/Response]
-    end
-
-    subgraph "UseCase Layer"
-        UseCase[UseCase]
-        InputOutput[Input/Output]
-    end
-
-    subgraph "Domain Layer (中核)"
-        Entity[Entity]
-        Value[Value Object]
-        DomainRepo[Repository Interface]
-        DomainService[Domain Service]
-    end
-
-    subgraph "Infrastructure Layer (最外部)"
-        RepoImpl[Repository Implementation]
-        Model[Persistence Model]
-        Mapper[Mapper]
-        Config[Config]
-    end
-
-    Controller --> UseCase
-    UseCase --> DomainRepo
-    UseCase --> DomainService
-    UseCase --> Entity
-    RepoImpl -.implements.-> DomainRepo
-    RepoImpl --> Model
-    RepoImpl --> Mapper
-    Mapper --> Entity
-
-    style Entity fill:#e1f5ff
-    style Value fill:#e1f5ff
-    style DomainRepo fill:#e1f5ff
-    style DomainService fill:#e1f5ff
-```
+![オニオンアーキテクチャ](images/onion-architecture.png)
 
 ### ディレクトリ構造
 
@@ -87,37 +48,6 @@ src/main/kotlin/com/example/obybackend/
             ├── xxxRequest.kt      # リクエストDTO
             └── xxxResponse.kt     # レスポンスDTO
 ```
-
-## 各層の詳細
-
-### Domain 層
-
-- **entity/**: ビジネス上の概念。一意な識別子を持ち、ビジネスロジックを含む
-- **value/**: 値オブジェクト。不変で等価性は値で判断(例: Email, Money)
-- **repository/**: リポジトリのインターフェース。実装は infrastructure 層
-- **service/**: 複数エンティティにまたがるドメインロジック
-
-### UseCase 層
-
-- **{機能名}/**: 機能ごとのディレクトリ(例: user/, message/)
-- **{機能名}UseCase.kt**: その機能の全ユースケース。トランザクション境界
-- **xxxInput.kt / xxxOutput.kt**: ユースケース層用の DTO
-
-### Infrastructure 層
-
-- **postgres_jdbc/{機能名}/**: 機能ごとのディレクトリ(例: user/, message/)
-  - **{機能名}Repository.kt**: Repository インターフェースの実装
-  - **{機能名}Table.kt**: DB テーブルに対応するクラス(@Table, @Id など)
-  - **{機能名}Mapper.kt**: ドメインエンティティ ⟷ DB モデルの変換
-- **config/**: Spring 設定、Bean 定義
-
-将来的に Redis などの他のデータストアを追加する場合は、`redis/` のようなディレクトリを追加します。
-
-### Presentation 層
-
-- **controller/{機能名}/**: 機能ごとのディレクトリ
-- **{機能名}Controller.kt**: HTTP リクエスト処理、Request→Input/Output→Response 変換
-- **xxxRequest.kt / xxxResponse.kt**: HTTP リクエスト/レスポンス用 DTO
 
 ## 依存関係のルール
 
@@ -155,32 +85,6 @@ class User(val userTable: UserTable) // これはNG
 // NG: UseCaseでRequestを受け取る
 fun createUser(request: CreateUserRequest) // これはNG
 ```
-
-## 命名規則
-
-### クラス名
-
-| 種類                      | 命名規則                   | 例                           |
-| ------------------------- | -------------------------- | ---------------------------- |
-| Entity                    | 名詞                       | `User`, `Message`, `Profile` |
-| Value Object              | 名詞                       | `Email`, `UserId`, `Money`   |
-| Repository Interface      | `{Entity名}Repository`     | `UserRepository`             |
-| Repository Implementation | `{機能名}Repository`       | `UserRepository`             |
-| DB Model                  | `{機能名}Table`            | `UserTable`                  |
-| Domain Service            | `{目的}Service`            | `UserAuthenticationService`  |
-| UseCase                   | `{機能名}UseCase`          | `UserUseCase`                |
-| Input                     | `{操作名}Input`            | `CreateUserInput`            |
-| Output                    | `{Entity名}Output`         | `UserOutput`                 |
-| Controller                | `{機能名}Controller`       | `UserController`             |
-| Request                   | `{操作名}Request`          | `CreateUserRequest`          |
-| Response                  | `{Entity名}Response`       | `UserResponse`               |
-| Mapper                    | `{機能名}Mapper`           | `UserMapper`                 |
-
-### ファイル配置
-
-- 1 ファイル 1 クラス
-- ファイル名とクラス名を一致させる
-- パッケージ構造はディレクトリ構造に従う
 
 ## データフロー
 
