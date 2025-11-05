@@ -5,10 +5,7 @@
   "proseWrap": "preserve",
   "overrides": [
     {
-      "files": "*.md",
-      "options": {
-        "proseWrap": "preserve"
-      }
+      "files": "*.md"
     }
   ]
 }

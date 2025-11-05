@@ -17,6 +17,6 @@
 ./gradlew ktlintFormat
 ```
 
-### Q: なぜ Prettier ではなく ktlint を使うのですか？
+### Q: なぜ主に Prettier ではなく ktlint を使うのですか？
 
 A: Prettier は web 開発言語（JavaScript/TypeScript 等）専用です。Kotlin プロジェクトには Kotlin 公式の ktlint が最適です。
