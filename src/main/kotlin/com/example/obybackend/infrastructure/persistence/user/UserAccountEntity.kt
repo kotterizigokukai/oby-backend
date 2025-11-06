@@ -12,7 +12,7 @@ import java.util.UUID
 @Table("app_user")
 data class UserAccountEntity(
     @Id
-    val id: UUID? = null,
+    val id: UUID,
     @Column("provider")
     val provider: AuthProvider,
     @Column("provider_subject")

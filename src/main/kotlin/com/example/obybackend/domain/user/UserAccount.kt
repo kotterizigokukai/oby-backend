@@ -1,5 +1,6 @@
 package com.example.obybackend.domain.user
 
+import com.example.obybackend.common.uuid.UuidGenerator
 import java.time.Instant
 import java.util.UUID
 
@@ -8,7 +9,7 @@ import java.util.UUID
  * Springなど外部フレームワークの依存は持たず、純粋なドメインモデルとして扱う。
  */
 data class UserAccount(
-    val id: UUID? = null,
+    val id: UUID = UuidGenerator.generate(),
     val provider: AuthProvider = AuthProvider.GOOGLE,
     val providerSubject: String,
     val email: String,
