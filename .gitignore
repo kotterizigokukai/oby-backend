@@ -43,6 +43,7 @@ out/
 
 ### Environment ###
 .env
+/.gradle-home/
 src/main/resources/application-local.properties
 
 ###AI tools###
