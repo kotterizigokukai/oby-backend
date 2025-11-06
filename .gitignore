@@ -43,8 +43,8 @@ out/
 
 ### Environment ###
 .env
+src/main/resources/application-local.properties
 
 ###AI tools###
 .codex
 AGENTS.md
-

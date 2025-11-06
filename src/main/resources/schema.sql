@@ -14,10 +14,3 @@ CREATE TABLE IF NOT EXISTS app_user (
     CONSTRAINT uq_provider_subject UNIQUE (provider, provider_subject),
     CONSTRAINT uq_user_email UNIQUE (email)
 );
-
-CREATE TABLE IF NOT EXISTS message (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    body TEXT NOT NULL,
-    author VARCHAR(255) NOT NULL,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
