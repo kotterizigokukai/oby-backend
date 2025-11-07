@@ -19,6 +19,7 @@ data class Bio(val value: String) {
 
     companion object {
         private const val MAX_LENGTH = 500
+
         fun isValid(value: String): Boolean {
             return value.length <= MAX_LENGTH
         }

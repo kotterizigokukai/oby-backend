@@ -15,6 +15,8 @@ class InvalidBioException(message: String) : ValidationException(message)
 
 class InvalidAvatarUrlException(message: String) : ValidationException(message)
 
+class InvalidImageException(message: String) : ValidationException(message)
+
 // ビジネスルール違反
 sealed class BusinessRuleException(message: String) : DomainException(message)
 

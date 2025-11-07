@@ -19,6 +19,7 @@ data class Nickname(val value: String) {
 
     companion object {
         private const val MAX_LENGTH = 50
+
         fun isValid(value: String): Boolean {
             return value.isNotBlank() && value.length <= MAX_LENGTH
         }
