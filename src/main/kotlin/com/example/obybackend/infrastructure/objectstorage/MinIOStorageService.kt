@@ -1,4 +1,4 @@
-package com.example.obybackend.infrastructure.storage
+package com.example.obybackend.infrastructure.objectstorage
 
 import com.example.obybackend.domain.repository.StorageService
 import io.minio.GetPresignedObjectUrlArgs

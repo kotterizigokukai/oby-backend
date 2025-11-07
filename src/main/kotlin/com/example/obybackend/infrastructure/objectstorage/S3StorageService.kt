@@ -1,4 +1,4 @@
-package com.example.obybackend.infrastructure.storage
+package com.example.obybackend.infrastructure.objectstorage
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider
 import com.amazonaws.auth.BasicAWSCredentials
