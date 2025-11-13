@@ -29,7 +29,8 @@ data class UserAccountEntity(
     @Column("updated_at")
     val updatedAt: Instant,
     @Transient
-    private val newAggregate: Boolean = false, // Persistable#isNew を制御してINSERT/UPDATEを切り替えるフラグ
+    // Persistable#isNew を制御してINSERT/UPDATEを切り替えるフラグ
+    private val newAggregate: Boolean = false,
 ) : Persistable<UUID> {
     override fun getId(): UUID? = aggregateId
 
