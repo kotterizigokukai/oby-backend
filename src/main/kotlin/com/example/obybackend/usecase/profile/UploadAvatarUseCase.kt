@@ -29,7 +29,7 @@ class UploadAvatarUseCase(
         // 2. 古い画像を削除 (存在する場合)
         profile.avatarUrl?.let { oldUrl ->
             try {
-                val oldKey = extractKeyFromUrl(oldUrl.value)
+                val oldKey = oldUrl.extractStorageKey()
                 storageService.delete(oldKey)
             } catch (e: Exception) {
                 // 古い画像削除失敗は無視 (既に削除済みの可能性)
@@ -52,16 +52,6 @@ class UploadAvatarUseCase(
             )
 
         return UploadAvatarOutput.from(updatedProfile)
-    }
-
-    /**
-     * URLからストレージキーを抽出
-     */
-    private fun extractKeyFromUrl(url: String): String {
-        // MinIO: http://localhost:9000/bucket/avatars/xxx.jpg
-        // S3: https://bucket.s3.amazonaws.com/avatars/xxx.jpg
-        // → avatars/xxx.jpg を抽出
-        return url.substringAfter("avatars/").let { "avatars/$it" }
     }
 }
 

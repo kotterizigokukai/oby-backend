@@ -15,6 +15,17 @@ data class AvatarUrl(val value: String) {
         }
     }
 
+    /**
+     * URLからストレージキーを抽出
+     *
+     * MinIO: http://localhost:9000/bucket/avatars/xxx.jpg
+     * S3: https://bucket.s3.amazonaws.com/avatars/xxx.jpg
+     * → avatars/xxx.jpg を抽出
+     */
+    fun extractStorageKey(): String {
+        return value.substringAfter("avatars/").let { "avatars/$it" }
+    }
+
     override fun toString(): String = value
 
     companion object {
