@@ -1,8 +1,8 @@
 package com.example.obybackend.application.user
 
-import com.example.obybackend.domain.user.AuthProvider
-import com.example.obybackend.domain.user.UserAccount
-import com.example.obybackend.domain.user.UserAccountRepository
+import com.example.obybackend.domain.entity.UserEntity
+import com.example.obybackend.domain.repository.UserAccountRepository
+import com.example.obybackend.domain.value.AuthProvider
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -20,26 +20,21 @@ class UserAccountApplicationService(
     fun findBySubject(
         provider: AuthProvider,
         subject: String,
-    ): UserAccount? = repository.findByProviderAndSubject(provider, subject)
+    ): UserEntity? = repository.findByProviderAndSubject(provider, subject)
 
     @Transactional
     fun registerOrUpdateGoogleUser(
         subject: String,
         email: String,
-        displayName: String,
-        avatarUrl: String?,
-    ): UserAccount {
+    ): UserEntity {
         val now = Instant.now()
         val existingUser = repository.findByProviderAndSubject(AuthProvider.GOOGLE, subject)
         return if (existingUser == null) {
             val created =
                 repository.save(
-                    UserAccount(
+                    UserEntity(
                         providerSubject = subject,
                         email = email,
-                        displayName = displayName,
-                        avatarUrl = avatarUrl,
-                        lastLoginAt = now,
                         createdAt = now,
                         updatedAt = now,
                     ),
@@ -51,9 +46,7 @@ class UserAccountApplicationService(
                 repository.save(
                     existingUser.withUpdatedProfile(
                         email = email,
-                        displayName = displayName,
-                        avatarUrl = avatarUrl,
-                        loginTime = now,
+                        updateTime = now,
                     ),
                 )
             logger.info("Updated Google user profile for subject {}", subject)

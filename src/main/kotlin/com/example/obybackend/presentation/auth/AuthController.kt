@@ -1,7 +1,7 @@
 package com.example.obybackend.presentation.auth
 
 import com.example.obybackend.application.user.UserAccountApplicationService
-import com.example.obybackend.domain.user.AuthProvider
+import com.example.obybackend.domain.value.AuthProvider
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.oauth2.core.oidc.user.OidcUser
 import org.springframework.web.bind.annotation.GetMapping

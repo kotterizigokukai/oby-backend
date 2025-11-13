@@ -21,15 +21,11 @@ class CustomOidcUserService(
         val oidcUser = delegate.loadUser(userRequest)
         val subject = oidcUser.subject
         val email = oidcUser.email ?: error("Google account does not expose an email address.")
-        val displayName = oidcUser.fullName ?: oidcUser.givenName ?: email.substringBefore("@")
-        val avatarUrl = oidcUser.picture
 
         val account =
             userAccountService.registerOrUpdateGoogleUser(
                 subject = subject,
                 email = email,
-                displayName = displayName,
-                avatarUrl = avatarUrl,
             )
 
         logger.debug("Authenticated Google user {} mapped to internal id {}", subject, account.id)

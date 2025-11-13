@@ -1,4 +1,4 @@
-package com.example.obybackend.domain.user
+package com.example.obybackend.domain.value
 
 /**
  * アプリケーション内の役割を表す列挙体。

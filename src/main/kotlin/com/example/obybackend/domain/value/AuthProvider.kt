@@ -1,4 +1,4 @@
-package com.example.obybackend.domain.user
+package com.example.obybackend.domain.value
 
 /**
  * 外部認証プロバイダの種別を表す値オブジェクト。

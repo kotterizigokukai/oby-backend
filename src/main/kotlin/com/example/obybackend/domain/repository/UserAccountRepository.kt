@@ -1,4 +1,7 @@
-package com.example.obybackend.domain.user
+package com.example.obybackend.domain.repository
+
+import com.example.obybackend.domain.entity.UserEntity
+import com.example.obybackend.domain.value.AuthProvider
 
 /**
  * ユーザーアカウントへアクセスするためのリポジトリポート。
@@ -8,7 +11,7 @@ interface UserAccountRepository {
     fun findByProviderAndSubject(
         provider: AuthProvider,
         providerSubject: String,
-    ): UserAccount?
+    ): UserEntity?
 
-    fun save(account: UserAccount): UserAccount
+    fun save(account: UserEntity): UserEntity
 }

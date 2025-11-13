@@ -1,8 +1,8 @@
 package com.example.obybackend.infrastructure.persistence.user
 
-import com.example.obybackend.domain.user.AuthProvider
-import com.example.obybackend.domain.user.UserAccount
-import com.example.obybackend.domain.user.UserAccountRepository
+import com.example.obybackend.domain.entity.UserEntity
+import com.example.obybackend.domain.repository.UserAccountRepository
+import com.example.obybackend.domain.value.AuthProvider
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Component
 import org.springframework.stereotype.Repository
@@ -26,14 +26,15 @@ class JdbcUserAccountRepository(
     override fun findByProviderAndSubject(
         provider: AuthProvider,
         providerSubject: String,
-    ): UserAccount? =
+    ): UserEntity? =
         userAccountCrudRepository
             .findByProviderAndProviderSubject(provider, providerSubject)
             ?.toDomain()
 
-    override fun save(account: UserAccount): UserAccount {
+    override fun save(account: UserEntity): UserEntity {
+        val isNew = userAccountCrudRepository.existsById(account.id).not()
         val saved =
-            userAccountCrudRepository.save(UserAccountEntity.fromDomain(account))
+            userAccountCrudRepository.save(UserAccountEntity.fromDomain(account, isNew))
         return saved.toDomain()
     }
 }
