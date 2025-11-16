@@ -2,6 +2,7 @@ package com.example.obybackend.presentation.controller.profile
 
 import com.example.obybackend.presentation.dto.profile.ProfileResponse
 import com.example.obybackend.presentation.dto.profile.UpdateProfileRequest
+import com.example.obybackend.presentation.validation.ImageFileValidator
 import com.example.obybackend.usecase.profile.DeleteAvatarUseCase
 import com.example.obybackend.usecase.profile.GetMyProfileUseCase
 import com.example.obybackend.usecase.profile.GetUserProfileUseCase
@@ -41,6 +42,7 @@ class ProfileController(
     private val updateMyProfileUseCase: UpdateMyProfileUseCase,
     private val uploadAvatarUseCase: UploadAvatarUseCase,
     private val deleteAvatarUseCase: DeleteAvatarUseCase,
+    private val imageFileValidator: ImageFileValidator,
 ) {
     /**
      * U1: 自分のプロフィール取得
@@ -108,6 +110,10 @@ class ProfileController(
         @RequestPart("avatar") file: MultipartFile,
     ): ResponseEntity<ProfileResponse> {
         val userId = extractUserId(userIdHeader)
+
+        // 早期バリデーション: MIME type, 拡張子, ファイルサイズをチェック
+        imageFileValidator.validate(file)
+
         val input =
             UploadAvatarInput(
                 userId = userId,
