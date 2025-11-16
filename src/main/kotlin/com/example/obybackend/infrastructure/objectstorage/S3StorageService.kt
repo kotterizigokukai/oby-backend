@@ -34,7 +34,7 @@ class S3StorageService(
                 .withCredentials(AWSStaticCredentialsProvider(credentials))
                 .build()
         } else {
-            // デフォルト認証(EC2 IAMロールなど)
+            // デフォルト認証(EC2 IAMロール)
             AmazonS3ClientBuilder.standard()
                 .withRegion(region)
                 .build()

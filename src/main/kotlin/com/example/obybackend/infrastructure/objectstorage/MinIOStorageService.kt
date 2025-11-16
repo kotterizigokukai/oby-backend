@@ -1,11 +1,9 @@
 package com.example.obybackend.infrastructure.objectstorage
 
 import com.example.obybackend.domain.repository.StorageService
-import io.minio.GetPresignedObjectUrlArgs
 import io.minio.MinioClient
 import io.minio.PutObjectArgs
 import io.minio.RemoveObjectArgs
-import io.minio.http.Method
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Service
@@ -57,14 +55,8 @@ class MinIOStorageService(
     }
 
     override fun getPublicUrl(key: String): String {
-        // MinIOの場合は presigned URL を返す (開発環境用)
-        return minioClient.getPresignedObjectUrl(
-            GetPresignedObjectUrlArgs.builder()
-                .method(Method.GET)
-                .bucket(bucket)
-                .`object`(key)
-                .expiry(60 * 60 * 24 * 7) // 7日間有効
-                .build(),
-        )
+        // MinIOの場合は永続的なパブリックURLを返す (開発環境用)
+        // バケットは完全公開 (public) に設定されています
+        return "$endpoint/$bucket/$key"
     }
 }
