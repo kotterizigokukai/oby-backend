@@ -4,6 +4,7 @@ import com.example.obybackend.domain.entity.ProfileEntity
 import com.example.obybackend.domain.exception.ProfileNotFoundException
 import com.example.obybackend.domain.repository.ProfileRepository
 import com.example.obybackend.domain.repository.StorageService
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
@@ -16,6 +17,8 @@ class DeleteAvatarUseCase(
     private val profileRepository: ProfileRepository,
     private val storageService: StorageService,
 ) {
+    private val logger = LoggerFactory.getLogger(DeleteAvatarUseCase::class.java)
+
     @Transactional
     fun execute(userId: UUID): DeleteAvatarOutput {
         // 1. 既存プロフィール取得
@@ -28,9 +31,10 @@ class DeleteAvatarUseCase(
             try {
                 val key = oldUrl.extractStorageKey()
                 storageService.delete(key)
+                logger.info("Successfully deleted avatar from storage: key=$key, userId=$userId")
             } catch (e: Exception) {
-                // 削除失敗は無視 (既に削除済みの可能性)
-                // ログ記録などの処理を追加可能
+                // 削除失敗は無視 (既に削除済みの可能性があるため処理は継続)
+                logger.warn("Failed to delete avatar from storage: url=${oldUrl.value}, userId=$userId", e)
             }
         }
 

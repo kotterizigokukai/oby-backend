@@ -2,10 +2,12 @@ package com.example.obybackend.usecase.profile
 
 import com.example.obybackend.domain.entity.ProfileEntity
 import com.example.obybackend.domain.exception.ProfileNotFoundException
+import com.example.obybackend.domain.exception.StorageException
 import com.example.obybackend.domain.repository.ProfileRepository
 import com.example.obybackend.domain.repository.StorageService
 import com.example.obybackend.domain.value.AvatarUrl
 import com.example.obybackend.infrastructure.objectstorage.ImageProcessor
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
@@ -19,6 +21,8 @@ class UploadAvatarUseCase(
     private val storageService: StorageService,
     private val imageProcessor: ImageProcessor,
 ) {
+    private val logger = LoggerFactory.getLogger(UploadAvatarUseCase::class.java)
+
     @Transactional
     fun execute(input: UploadAvatarInput): UploadAvatarOutput {
         // 1. 既存プロフィール取得
@@ -31,9 +35,10 @@ class UploadAvatarUseCase(
             try {
                 val oldKey = oldUrl.extractStorageKey()
                 storageService.delete(oldKey)
+                logger.info("Successfully deleted old avatar from storage: key=$oldKey, userId=${input.userId}")
             } catch (e: Exception) {
-                // 古い画像削除失敗は無視 (既に削除済みの可能性)
-                // ログ記録などの処理を追加可能
+                // 古い画像削除失敗は無視 (既に削除済みの可能性があるため処理は継続)
+                logger.warn("Failed to delete old avatar from storage: url=${oldUrl.value}, userId=${input.userId}", e)
             }
         }
 
@@ -42,7 +47,15 @@ class UploadAvatarUseCase(
 
         // 4. 新しい画像をアップロード
         val key = "avatars/${input.userId}-${UUID.randomUUID()}.jpg"
-        val newUrl = storageService.upload(key, processedImage, "image/jpeg")
+        val newUrl =
+            try {
+                storageService.upload(key, processedImage, "image/jpeg")
+            } catch (e: Exception) {
+                logger.error("Failed to upload new avatar to storage: key=$key, userId=${input.userId}", e)
+                throw StorageException("Failed to upload avatar image", e)
+            }
+
+        logger.info("Successfully uploaded new avatar: key=$key, userId=${input.userId}")
 
         // 5. DBを更新
         val updatedProfile =

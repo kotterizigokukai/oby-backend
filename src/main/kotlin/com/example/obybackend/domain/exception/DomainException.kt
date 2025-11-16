@@ -22,3 +22,12 @@ sealed class BusinessRuleException(message: String) : DomainException(message)
 
 // リソースが見つからない
 class ProfileNotFoundException(userId: String) : DomainException("Profile not found for user: $userId")
+
+// インフラストラクチャ層の例外
+sealed class InfrastructureException(message: String, cause: Throwable? = null) : DomainException(message) {
+    init {
+        if (cause != null) initCause(cause)
+    }
+}
+
+class StorageException(message: String, cause: Throwable? = null) : InfrastructureException(message, cause)

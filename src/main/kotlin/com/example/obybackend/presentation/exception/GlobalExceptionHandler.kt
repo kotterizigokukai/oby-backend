@@ -1,6 +1,7 @@
 package com.example.obybackend.presentation.exception
 
 import com.example.obybackend.domain.exception.DomainException
+import com.example.obybackend.domain.exception.InfrastructureException
 import com.example.obybackend.domain.exception.ProfileNotFoundException
 import com.example.obybackend.domain.exception.ValidationException
 import io.swagger.v3.oas.annotations.media.Schema
@@ -44,6 +45,21 @@ class GlobalExceptionHandler {
                 timestamp = LocalDateTime.now(),
             )
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse)
+    }
+
+    /**
+     * インフラストラクチャ例外のハンドリング (ストレージエラーなど)
+     */
+    @ExceptionHandler(InfrastructureException::class)
+    fun handleInfrastructureException(ex: InfrastructureException): ResponseEntity<ErrorResponse> {
+        val errorResponse =
+            ErrorResponse(
+                status = HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                error = "Infrastructure Error",
+                message = ex.message ?: "Storage or infrastructure service error occurred",
+                timestamp = LocalDateTime.now(),
+            )
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse)
     }
 
     /**
