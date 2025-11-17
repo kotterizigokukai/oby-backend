@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpStatus
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl
-import org.springframework.security.config.annotation.ObjectPostProcessor
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
@@ -13,7 +12,6 @@ import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.core.session.SessionRegistry
 import org.springframework.security.core.session.SessionRegistryImpl
 import org.springframework.security.web.SecurityFilterChain
-import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository
 import org.springframework.security.web.session.HttpSessionEventPublisher
 import org.springframework.security.web.session.SessionInformationExpiredStrategy
@@ -46,14 +44,6 @@ class SecurityConfig(
             }
             .authorizeHttpRequests { authorize ->
                 authorize
-                    .withObjectPostProcessor(
-                        object : ObjectPostProcessor<DefaultWebSecurityExpressionHandler> {
-                            override fun <O : DefaultWebSecurityExpressionHandler> postProcess(handler: O): O {
-                                handler.setRoleHierarchy(roleHierarchy())
-                                return handler
-                            }
-                        },
-                    )
                     .requestMatchers("/", "/favicon.ico", "/error", "/actuator/health").permitAll()
                     .requestMatchers("/api/admin/**").hasRole("ADMIN")
                     .anyRequest().authenticated()
@@ -94,8 +84,5 @@ class SecurityConfig(
 
     @Bean
     fun roleHierarchy(): RoleHierarchy =
-        RoleHierarchyImpl().apply {
-            // ROLE_ADMIN > ROLE_USER の順序を定義して、管理者が一般権限も自動的に持つようにする
-            setHierarchy("ROLE_ADMIN > ROLE_USER")
-        }
+        RoleHierarchyImpl.fromHierarchy("ROLE_ADMIN > ROLE_USER")
 }
