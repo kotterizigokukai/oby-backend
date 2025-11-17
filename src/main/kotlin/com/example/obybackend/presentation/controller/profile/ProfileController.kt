@@ -1,5 +1,6 @@
 package com.example.obybackend.presentation.controller.profile
 
+import com.example.obybackend.domain.repository.UserRepository
 import com.example.obybackend.presentation.dto.profile.ProfileResponse
 import com.example.obybackend.presentation.dto.profile.UpdateProfileRequest
 import com.example.obybackend.presentation.validation.ImageFileValidator
@@ -17,13 +18,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.security.oauth2.core.user.OAuth2User
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.bind.annotation.RestController
@@ -43,6 +45,7 @@ class ProfileController(
     private val uploadAvatarUseCase: UploadAvatarUseCase,
     private val deleteAvatarUseCase: DeleteAvatarUseCase,
     private val imageFileValidator: ImageFileValidator,
+    private val userRepository: UserRepository,
 ) {
     /**
      * U1: 自分のプロフィール取得
@@ -56,9 +59,9 @@ class ProfileController(
         ],
     )
     fun getMyProfile(
-        @RequestHeader("X-User-Id", required = false) userIdHeader: String?,
+        @AuthenticationPrincipal oauth2User: OAuth2User,
     ): ResponseEntity<ProfileResponse> {
-        val userId = extractUserId(userIdHeader)
+        val userId = extractUserIdFromOAuth2User(oauth2User)
         val output = getMyProfileUseCase.execute(userId)
 
         return ResponseEntity.ok(ProfileResponse.from(output))
@@ -77,10 +80,10 @@ class ProfileController(
         ],
     )
     fun updateMyProfile(
-        @RequestHeader("X-User-Id", required = false) userIdHeader: String?,
+        @AuthenticationPrincipal oauth2User: OAuth2User,
         @RequestBody request: UpdateProfileRequest,
     ): ResponseEntity<ProfileResponse> {
-        val userId = extractUserId(userIdHeader)
+        val userId = extractUserIdFromOAuth2User(oauth2User)
         val input =
             UpdateMyProfileInput(
                 userId = userId,
@@ -106,10 +109,10 @@ class ProfileController(
         ],
     )
     fun uploadAvatar(
-        @RequestHeader("X-User-Id", required = false) userIdHeader: String?,
+        @AuthenticationPrincipal oauth2User: OAuth2User,
         @RequestPart("avatar") file: MultipartFile,
     ): ResponseEntity<ProfileResponse> {
-        val userId = extractUserId(userIdHeader)
+        val userId = extractUserIdFromOAuth2User(oauth2User)
 
         // 早期バリデーション: MIME type, 拡張子, ファイルサイズをチェック
         imageFileValidator.validate(file)
@@ -137,9 +140,9 @@ class ProfileController(
         ],
     )
     fun deleteAvatar(
-        @RequestHeader("X-User-Id", required = false) userIdHeader: String?,
+        @AuthenticationPrincipal oauth2User: OAuth2User,
     ): ResponseEntity<ProfileResponse> {
-        val userId = extractUserId(userIdHeader)
+        val userId = extractUserIdFromOAuth2User(oauth2User)
         val output = deleteAvatarUseCase.execute(userId)
 
         return ResponseEntity.ok(ProfileResponse.from(output))
@@ -165,14 +168,15 @@ class ProfileController(
     }
 
     /**
-     * 一時的なユーザーID取得処理（認証統合まで）
+     * OAuth2UserからユーザーIDを取得
      */
-    private fun extractUserId(userIdHeader: String?): UUID {
-        return if (userIdHeader != null) {
-            UUID.fromString(userIdHeader)
-        } else {
-            // デフォルトのテスト用UUID（認証実装後は削除）
-            UUID.fromString("00000000-0000-0000-0000-000000000001")
-        }
+    private fun extractUserIdFromOAuth2User(oauth2User: OAuth2User): UUID {
+        val googleSub = oauth2User.getAttribute<String>("sub")
+            ?: throw IllegalStateException("Google sub not found in OAuth2User")
+
+        val user = userRepository.findByGoogleSub(googleSub)
+            ?: throw IllegalStateException("User not found for Google sub: $googleSub")
+
+        return user.id
     }
 }
