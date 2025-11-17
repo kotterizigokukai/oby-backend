@@ -1,0 +1,6 @@
+# Google OAuth 2.0 のローカル環境用設定サンプル
+# このファイルを `application-local.properties` にコピーし、実際の値を設定してください。
+# `src/main/resources/application-local.properties` は .gitignore で除外済みです。
+
+spring.security.oauth2.client.registration.google.client-id=your-client-id.apps.googleusercontent.com
+spring.security.oauth2.client.registration.google.client-secret=your-client-secret

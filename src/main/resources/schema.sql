@@ -1,6 +1,11 @@
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
-CREATE TABLE IF NOT EXISTS messages (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    text VARCHAR NOT NULL
+CREATE TABLE IF NOT EXISTS app_user (
+    id UUID PRIMARY KEY,
+    provider VARCHAR(32) NOT NULL,
+    provider_subject VARCHAR(128) NOT NULL,
+    email VARCHAR(320) NOT NULL,
+    role VARCHAR(32) NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    CONSTRAINT uq_provider_subject UNIQUE (provider, provider_subject),
+    CONSTRAINT uq_user_email UNIQUE (email)
 );
