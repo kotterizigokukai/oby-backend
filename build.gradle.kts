@@ -23,9 +23,14 @@ repositories {
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-security")
+    implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0")
+
+    // .env file support
+    implementation("me.paulschwarz:spring-dotenv:4.0.0")
 
     // Storage
     implementation("io.minio:minio:8.5.7")
