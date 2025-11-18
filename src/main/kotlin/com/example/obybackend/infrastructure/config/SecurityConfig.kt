@@ -116,6 +116,8 @@ class CsrfCookieFilter : OncePerRequestFilter() {
  *
  * Spring Security 6.0以降推奨のXOR CSRFトークンハンドラーを使用。
  * これにより、BREACH攻撃からの保護が強化される。
+ *
+ * マルチパートリクエスト（ファイルアップロード）の場合は従来のハンドリングを使用。
  */
 class SpaCsrfTokenRequestHandler : CsrfTokenRequestAttributeHandler() {
     private val delegate = XorCsrfTokenRequestAttributeHandler()
@@ -133,7 +135,14 @@ class SpaCsrfTokenRequestHandler : CsrfTokenRequestAttributeHandler() {
         request: HttpServletRequest,
         csrfToken: CsrfToken,
     ): String? {
-        // X-XSRF-TOKENヘッダーまたはリクエストパラメータからトークンを取得
-        return delegate.resolveCsrfTokenValue(request, csrfToken)
+        // X-XSRF-TOKENヘッダーから直接トークンを取得
+        // （SPAではヘッダーでトークンを送信するため、XORハンドラーは使用しない）
+        val headerValue = request.getHeader(csrfToken.headerName)
+        if (headerValue != null) {
+            return headerValue
+        }
+
+        // ヘッダーにない場合はリクエストパラメータから取得
+        return request.getParameter(csrfToken.parameterName)
     }
 }
