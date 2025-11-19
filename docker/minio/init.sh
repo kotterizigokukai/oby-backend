@@ -24,4 +24,21 @@ fi
 echo "Setting bucket policy to public..."
 mc anonymous set public myminio/${BUCKET_NAME}
 
+# テスト画像のアップロード
+if [ -d "/test-images" ] && [ "$(ls -A /test-images 2>/dev/null)" ]; then
+    echo "Uploading test images..."
+    for image in /test-images/*.jpg /test-images/*.jpeg /test-images/*.png; do
+        if [ -f "$image" ]; then
+            filename=$(basename "$image")
+            # テストユーザーID（data.sqlと一致させる必要がある）
+            # 018d0000-0000-7000-a000-000000000001
+            mc cp "$image" "myminio/${BUCKET_NAME}/room-posts/018d0000-0000-7000-a000-000000000001/$filename"
+            echo "Uploaded: $filename"
+        fi
+    done
+    echo "Test images uploaded successfully!"
+else
+    echo "No test images found in /test-images, skipping upload..."
+fi
+
 echo "MinIO initialization completed successfully!"
