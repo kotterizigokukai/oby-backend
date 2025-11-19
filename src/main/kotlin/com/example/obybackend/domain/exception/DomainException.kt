@@ -23,6 +23,8 @@ sealed class BusinessRuleException(message: String) : DomainException(message)
 // リソースが見つからない
 class ProfileNotFoundException(userId: String) : DomainException("Profile not found for user: $userId")
 
+class RoomPostNotFoundException(roomPostId: String) : DomainException("Room post not found: $roomPostId")
+
 // インフラストラクチャ層の例外
 sealed class InfrastructureException(message: String, cause: Throwable? = null) : DomainException(message) {
     init {
