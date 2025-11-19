@@ -7,13 +7,8 @@ import org.springframework.web.multipart.MultipartFile
 /**
  * 画像ファイルバリデーター
  *
- * Controller層での早期バリデーションを実施し、
- * 不正なファイルを早期に検出してリソースの無駄を防ぐ
- *
- * フロントエンドでは画像のトリミング時にすべてJPEG形式に変換しているため、
- * 実際にアップロードされるファイルはほぼimage/jpegとなる。
- * MIMEタイプでの検証は拡張子よりも信頼性が高く（拡張子は簡単に偽装可能）、
- * さらにImageProcessorで実際の画像形式も検証しているため、セキュリティは十分に保たれる。
+ * Controller層で早期バリデーションを行い、不正なファイルを即座に拒否する。
+ * ImageProcessor（Infrastructure層）で実際の画像形式も検証するため、多層防御となる。
  */
 @Component
 class ImageFileValidator {
@@ -21,9 +16,7 @@ class ImageFileValidator {
         // 最大ファイルサイズ: 5MB
         private const val MAX_FILE_SIZE = 5 * 1024 * 1024L
 
-        // 許可するMIMEタイプ
-        // フロントエンドがトリミング後にJPEGに変換するが、
-        // トリミング前の直接アップロードにも対応するため複数形式を許可
+        // 許可するMIMEタイプ（JPEG, PNG, WebP）
         private val ALLOWED_MIME_TYPES =
             setOf(
                 "image/jpeg",
@@ -35,13 +28,8 @@ class ImageFileValidator {
     /**
      * 画像ファイルをバリデーション
      *
-     * MIMEタイプのみで検証を行う。拡張子チェックは以下の理由により不要:
-     * 1. MIMEタイプの方が信頼性が高い（拡張子は簡単に偽装可能）
-     * 2. ImageProcessorで実際の画像形式も検証している
-     * 3. フロントエンドが既にJPEGに統一している
-     *
      * @param file アップロードされたファイル
-     * @throws InvalidImageException バリデーションエラー
+     * @throws InvalidImageException ファイルが空、サイズ超過、または不正なMIMEタイプの場合
      */
     fun validate(file: MultipartFile) {
         // 1. ファイルが空でないかチェック
