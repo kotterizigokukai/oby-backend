@@ -166,5 +166,4 @@ class ProfileController(
 
         return ResponseEntity.ok(ProfileResponse.from(output))
     }
-
 }

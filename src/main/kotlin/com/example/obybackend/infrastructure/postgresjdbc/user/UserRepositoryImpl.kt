@@ -1,9 +1,9 @@
 package com.example.obybackend.infrastructure.postgresjdbc.user
 
+import com.example.obybackend.common.timestamp.TimestampGenerator
 import com.example.obybackend.domain.entity.UserEntity
 import com.example.obybackend.domain.repository.UserRepository
 import org.springframework.stereotype.Repository
-import java.time.Instant
 import java.util.UUID
 
 /**
@@ -13,6 +13,7 @@ import java.util.UUID
 class UserRepositoryImpl(
     private val userJdbcRepository: UserJdbcRepository,
     private val mapper: UserMapper,
+    private val timestampGenerator: TimestampGenerator,
 ) : UserRepository {
     override fun findById(id: UUID): UserEntity? {
         return userJdbcRepository.findByUserId(id)?.let { mapper.toDomain(it) }
@@ -53,7 +54,7 @@ class UserRepositoryImpl(
             googleSub = existing.googleSub,
             email = email,
             createdAt = existing.createdAt,
-            updatedAt = Instant.now(),
+            updatedAt = timestampGenerator.now(),
         )
 
         return userJdbcRepository.findByUserId(id)?.let { mapper.toDomain(it) }

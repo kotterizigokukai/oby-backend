@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.multipart.MaxUploadSizeExceededException
-import java.time.LocalDateTime
+import java.time.Instant
 
 /**
  * グローバル例外ハンドラー
@@ -27,7 +27,7 @@ class GlobalExceptionHandler {
                 status = HttpStatus.BAD_REQUEST.value(),
                 error = "Validation Error",
                 message = ex.message ?: "Invalid input",
-                timestamp = LocalDateTime.now(),
+                timestamp = Instant.now(),
             )
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse)
     }
@@ -42,7 +42,7 @@ class GlobalExceptionHandler {
                 status = HttpStatus.NOT_FOUND.value(),
                 error = "Profile Not Found",
                 message = ex.message ?: "Profile not found",
-                timestamp = LocalDateTime.now(),
+                timestamp = Instant.now(),
             )
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse)
     }
@@ -57,7 +57,7 @@ class GlobalExceptionHandler {
                 status = HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 error = "Infrastructure Error",
                 message = ex.message ?: "Storage or infrastructure service error occurred",
-                timestamp = LocalDateTime.now(),
+                timestamp = Instant.now(),
             )
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse)
     }
@@ -72,7 +72,7 @@ class GlobalExceptionHandler {
                 status = HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 error = "Domain Error",
                 message = ex.message ?: "An unexpected error occurred",
-                timestamp = LocalDateTime.now(),
+                timestamp = Instant.now(),
             )
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse)
     }
@@ -87,7 +87,7 @@ class GlobalExceptionHandler {
                 status = HttpStatus.BAD_REQUEST.value(),
                 error = "File Size Exceeded",
                 message = "File size exceeds maximum allowed size (5MB)",
-                timestamp = LocalDateTime.now(),
+                timestamp = Instant.now(),
             )
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse)
     }
@@ -102,7 +102,7 @@ class GlobalExceptionHandler {
                 status = HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 error = "Internal Server Error",
                 message = ex.message ?: "An unexpected error occurred",
-                timestamp = LocalDateTime.now(),
+                timestamp = Instant.now(),
             )
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse)
     }
@@ -119,6 +119,6 @@ data class ErrorResponse(
     val error: String,
     @Schema(description = "エラーメッセージ", example = "Nickname must be between 1 and 50 characters")
     val message: String,
-    @Schema(description = "エラー発生時刻", example = "2025-11-07T12:34:56")
-    val timestamp: LocalDateTime,
+    @Schema(description = "エラー発生時刻 (UTC)", example = "2025-11-07T12:34:56Z")
+    val timestamp: Instant,
 )
