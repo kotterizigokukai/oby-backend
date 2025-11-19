@@ -1,6 +1,8 @@
 package com.example.obybackend.usecase.profile
 
+import com.example.obybackend.common.timestamp.TimestampGenerator
 import com.example.obybackend.domain.entity.ProfileEntity
+import com.example.obybackend.domain.exception.ProfileNotFoundException
 import com.example.obybackend.domain.repository.ProfileRepository
 import com.example.obybackend.domain.value.Bio
 import com.example.obybackend.domain.value.Nickname
@@ -10,24 +12,37 @@ import java.util.UUID
 
 /**
  * プロフィール更新ユースケース
+ *
+ * ビジネスロジック（タイムスタンプ更新）を担当
  */
 @Service
 class UpdateMyProfileUseCase(
     private val profileRepository: ProfileRepository,
+    private val timestampGenerator: TimestampGenerator,
 ) {
     @Transactional
     fun execute(input: UpdateMyProfileInput): UpdateMyProfileOutput {
+        // 既存プロフィールを取得
+        val existingProfile =
+            profileRepository.findByUserId(input.userId)
+                ?: throw ProfileNotFoundException(input.userId.toString())
+
+        // 値オブジェクトに変換
         val nickname = Nickname(input.nickname)
         val bio = input.bio?.let { Bio(it) }
 
+        // 更新されたエンティティを作成（updatedAtを現在時刻に設定）
         val updatedProfile =
-            profileRepository.updateNicknameAndBio(
-                userId = input.userId,
+            existingProfile.copy(
                 nickname = nickname,
                 bio = bio,
+                updatedAt = timestampGenerator.now(),
             )
 
-        return UpdateMyProfileOutput.from(updatedProfile)
+        // 保存
+        val savedProfile = profileRepository.save(updatedProfile)
+
+        return UpdateMyProfileOutput.from(savedProfile)
     }
 }
 

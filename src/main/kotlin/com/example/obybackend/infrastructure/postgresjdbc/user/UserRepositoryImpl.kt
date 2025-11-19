@@ -3,7 +3,7 @@ package com.example.obybackend.infrastructure.postgresjdbc.user
 import com.example.obybackend.domain.entity.UserEntity
 import com.example.obybackend.domain.repository.UserRepository
 import org.springframework.stereotype.Repository
-import java.time.LocalDateTime
+import java.time.Instant
 import java.util.UUID
 
 /**
@@ -53,7 +53,7 @@ class UserRepositoryImpl(
             googleSub = existing.googleSub,
             email = email,
             createdAt = existing.createdAt,
-            updatedAt = LocalDateTime.now(),
+            updatedAt = Instant.now(),
         )
 
         return userJdbcRepository.findByUserId(id)?.let { mapper.toDomain(it) }

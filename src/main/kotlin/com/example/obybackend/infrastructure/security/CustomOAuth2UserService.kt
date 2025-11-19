@@ -1,5 +1,6 @@
 package com.example.obybackend.infrastructure.security
 
+import com.example.obybackend.common.timestamp.TimestampGenerator
 import com.example.obybackend.domain.entity.ProfileEntity
 import com.example.obybackend.domain.entity.UserEntity
 import com.example.obybackend.domain.repository.ProfileRepository
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional
 class CustomOAuth2UserService(
     private val userRepository: UserRepository,
     private val profileRepository: ProfileRepository,
+    private val timestampGenerator: TimestampGenerator,
 ) : DefaultOAuth2UserService() {
     override fun loadUser(userRequest: OAuth2UserRequest): OAuth2User {
         val oauth2User = super.loadUser(userRequest)
@@ -56,20 +58,22 @@ class CustomOAuth2UserService(
     ): UserEntity {
         // 新規ユーザーを作成
         val newUser =
-            UserEntity(
+            UserEntity.create(
                 googleSub = googleSub,
                 email = email,
+                timestampGenerator = timestampGenerator,
             )
         val savedUser = userRepository.save(newUser)
 
         // 空のプロフィールを自動作成
         // 初期値としてGoogleの名前を使用
         val newProfile =
-            ProfileEntity(
+            ProfileEntity.create(
                 userId = savedUser.id,
                 nickname = Nickname(name),
                 avatarUrl = null,
                 bio = null,
+                timestampGenerator = timestampGenerator,
             )
         profileRepository.save(newProfile)
 

@@ -4,7 +4,7 @@ import org.springframework.data.jdbc.repository.query.Modifying
 import org.springframework.data.jdbc.repository.query.Query
 import org.springframework.data.repository.CrudRepository
 import org.springframework.data.repository.query.Param
-import java.time.LocalDateTime
+import java.time.Instant
 import java.util.UUID
 
 /**
@@ -54,7 +54,7 @@ interface UserJdbcRepository : CrudRepository<UserTable, UUID> {
         @Param("id") id: UUID,
         @Param("googleSub") googleSub: String,
         @Param("email") email: String,
-        @Param("createdAt") createdAt: LocalDateTime,
-        @Param("updatedAt") updatedAt: LocalDateTime,
+        @Param("createdAt") createdAt: Instant,
+        @Param("updatedAt") updatedAt: Instant,
     )
 }

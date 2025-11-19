@@ -2,7 +2,7 @@ package com.example.obybackend.infrastructure.postgresjdbc.user
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Table
-import java.time.LocalDateTime
+import java.time.Instant
 import java.util.UUID
 
 /**
@@ -11,8 +11,8 @@ import java.util.UUID
  * @property id ユーザーID (主キー)
  * @property googleSub GoogleのユニークID (sub claim)
  * @property email メールアドレス
- * @property createdAt 作成日時
- * @property updatedAt 更新日時
+ * @property createdAt 作成日時 (UTC)
+ * @property updatedAt 更新日時 (UTC)
  */
 @Table("users")
 data class UserTable(
@@ -20,6 +20,6 @@ data class UserTable(
     val id: UUID,
     val googleSub: String,
     val email: String,
-    val createdAt: LocalDateTime,
-    val updatedAt: LocalDateTime,
+    val createdAt: Instant,
+    val updatedAt: Instant,
 )

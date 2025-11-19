@@ -3,15 +3,14 @@ package com.example.obybackend.infrastructure.postgresjdbc.profile
 import com.example.obybackend.domain.entity.ProfileEntity
 import com.example.obybackend.domain.exception.ProfileNotFoundException
 import com.example.obybackend.domain.repository.ProfileRepository
-import com.example.obybackend.domain.value.AvatarUrl
-import com.example.obybackend.domain.value.Bio
-import com.example.obybackend.domain.value.Nickname
 import org.springframework.stereotype.Repository
-import java.time.LocalDateTime
 import java.util.UUID
 
 /**
  * ProfileRepository実装
+ *
+ * シンプルなデータ永続化のみを担当
+ * ビジネスロジック（タイムスタンプ更新等）はユースケース層で行う
  */
 @Repository
 class ProfileRepositoryImpl(
@@ -33,72 +32,8 @@ class ProfileRepositoryImpl(
             createdAt = table.createdAt,
             updatedAt = table.updatedAt,
         )
-        // UPSERTの後、再取得
+        // UPSERTの後、再取得して最新状態を返す
         return profileJdbcRepository.findByUserId(table.userId)?.let { mapper.toDomain(it) }
             ?: throw ProfileNotFoundException(table.userId.toString())
-    }
-
-    override fun updateNicknameAndBio(
-        userId: UUID,
-        nickname: Nickname,
-        bio: Bio?,
-    ): ProfileEntity {
-        val existing =
-            profileJdbcRepository.findByUserId(userId)
-                ?: throw ProfileNotFoundException(userId.toString())
-
-        profileJdbcRepository.upsert(
-            id = existing.id,
-            userId = existing.userId,
-            nickname = nickname.value,
-            avatarUrl = existing.avatarUrl,
-            bio = bio?.value,
-            createdAt = existing.createdAt,
-            updatedAt = LocalDateTime.now(),
-        )
-
-        return profileJdbcRepository.findByUserId(userId)?.let { mapper.toDomain(it) }
-            ?: throw ProfileNotFoundException(userId.toString())
-    }
-
-    override fun updateAvatarUrl(
-        userId: UUID,
-        avatarUrl: AvatarUrl,
-    ): ProfileEntity {
-        val existing =
-            profileJdbcRepository.findByUserId(userId)
-                ?: throw ProfileNotFoundException(userId.toString())
-
-        profileJdbcRepository.upsert(
-            id = existing.id,
-            userId = existing.userId,
-            nickname = existing.nickname,
-            avatarUrl = avatarUrl.value,
-            bio = existing.bio,
-            createdAt = existing.createdAt,
-            updatedAt = LocalDateTime.now(),
-        )
-
-        return profileJdbcRepository.findByUserId(userId)?.let { mapper.toDomain(it) }
-            ?: throw ProfileNotFoundException(userId.toString())
-    }
-
-    override fun deleteAvatarUrl(userId: UUID): ProfileEntity {
-        val existing =
-            profileJdbcRepository.findByUserId(userId)
-                ?: throw ProfileNotFoundException(userId.toString())
-
-        profileJdbcRepository.upsert(
-            id = existing.id,
-            userId = existing.userId,
-            nickname = existing.nickname,
-            avatarUrl = null,
-            bio = existing.bio,
-            createdAt = existing.createdAt,
-            updatedAt = LocalDateTime.now(),
-        )
-
-        return profileJdbcRepository.findByUserId(userId)?.let { mapper.toDomain(it) }
-            ?: throw ProfileNotFoundException(userId.toString())
     }
 }
