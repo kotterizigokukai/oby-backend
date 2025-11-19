@@ -7,8 +7,8 @@ import org.springframework.web.multipart.MultipartFile
 /**
  * 画像ファイルバリデーター
  *
- * Controller層での早期バリデーションを実施し、
- * 不正なファイルを早期に検出してリソースの無駄を防ぐ
+ * Controller層で早期バリデーションを行い、不正なファイルを即座に拒否する。
+ * ImageProcessor（Infrastructure層）で実際の画像形式も検証するため、多層防御となる。
  */
 @Component
 class ImageFileValidator {
@@ -16,21 +16,12 @@ class ImageFileValidator {
         // 最大ファイルサイズ: 5MB
         private const val MAX_FILE_SIZE = 5 * 1024 * 1024L
 
-        // 許可するMIMEタイプ
+        // 許可するMIMEタイプ（JPEG, PNG, WebP）
         private val ALLOWED_MIME_TYPES =
             setOf(
                 "image/jpeg",
                 "image/png",
                 "image/webp",
-            )
-
-        // 許可する拡張子
-        private val ALLOWED_EXTENSIONS =
-            setOf(
-                "jpg",
-                "jpeg",
-                "png",
-                "webp",
             )
     }
 
@@ -38,7 +29,7 @@ class ImageFileValidator {
      * 画像ファイルをバリデーション
      *
      * @param file アップロードされたファイル
-     * @throws InvalidImageException バリデーションエラー
+     * @throws InvalidImageException ファイルが空、サイズ超過、または不正なMIMEタイプの場合
      */
     fun validate(file: MultipartFile) {
         // 1. ファイルが空でないかチェック
@@ -60,23 +51,5 @@ class ImageFileValidator {
                 "Invalid file type. Allowed types: ${ALLOWED_MIME_TYPES.joinToString()}, actual: $mimeType",
             )
         }
-
-        // 4. 拡張子チェック
-        val extension = extractExtension(file.originalFilename)
-        if (extension == null || extension !in ALLOWED_EXTENSIONS) {
-            throw InvalidImageException(
-                "Invalid file extension. Allowed extensions: ${ALLOWED_EXTENSIONS.joinToString()}, actual: $extension",
-            )
-        }
-    }
-
-    /**
-     * ファイル名から拡張子を抽出（小文字に変換）
-     */
-    private fun extractExtension(filename: String?): String? {
-        if (filename.isNullOrBlank()) return null
-        val lastDotIndex = filename.lastIndexOf('.')
-        if (lastDotIndex == -1 || lastDotIndex == filename.length - 1) return null
-        return filename.substring(lastDotIndex + 1).lowercase()
     }
 }

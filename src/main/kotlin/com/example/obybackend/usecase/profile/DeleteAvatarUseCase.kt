@@ -1,5 +1,6 @@
 package com.example.obybackend.usecase.profile
 
+import com.example.obybackend.common.timestamp.TimestampGenerator
 import com.example.obybackend.domain.entity.ProfileEntity
 import com.example.obybackend.domain.exception.ProfileNotFoundException
 import com.example.obybackend.domain.repository.ProfileRepository
@@ -11,11 +12,14 @@ import java.util.UUID
 
 /**
  * アバター画像削除ユースケース
+ *
+ * ビジネスロジック（タイムスタンプ更新）を担当
  */
 @Service
 class DeleteAvatarUseCase(
     private val profileRepository: ProfileRepository,
     private val storageService: StorageService,
+    private val timestampGenerator: TimestampGenerator,
 ) {
     private val logger = LoggerFactory.getLogger(DeleteAvatarUseCase::class.java)
 
@@ -38,10 +42,16 @@ class DeleteAvatarUseCase(
             }
         }
 
-        // 3. DBからURLを削除
-        val updatedProfile = profileRepository.deleteAvatarUrl(userId)
+        // 3. DBを更新（avatarUrlをnullに設定し、updatedAtを現在時刻に設定）
+        val updatedProfile =
+            profile.copy(
+                avatarUrl = null,
+                updatedAt = timestampGenerator.now(),
+            )
 
-        return DeleteAvatarOutput.from(updatedProfile)
+        val savedProfile = profileRepository.save(updatedProfile)
+
+        return DeleteAvatarOutput.from(savedProfile)
     }
 }
 

@@ -1,26 +1,24 @@
 package com.example.obybackend.domain.repository
 
 import com.example.obybackend.domain.entity.ProfileEntity
-import com.example.obybackend.domain.value.AvatarUrl
-import com.example.obybackend.domain.value.Bio
-import com.example.obybackend.domain.value.Nickname
 import java.util.UUID
 
+/**
+ * プロフィールリポジトリ
+ *
+ * クリーンアーキテクチャに従い、シンプルなCRUD操作のみを提供
+ * 更新ロジック（updatedAtの設定等）はユースケース層で行う
+ */
 interface ProfileRepository {
+    /**
+     * ユーザーIDでプロフィールを検索
+     */
     fun findByUserId(userId: UUID): ProfileEntity?
 
+    /**
+     * プロフィールを保存または更新（UPSERT）
+     *
+     * エンティティに含まれるすべてのフィールド（updatedAt含む）をそのまま永続化する
+     */
     fun save(profile: ProfileEntity): ProfileEntity
-
-    fun updateNicknameAndBio(
-        userId: UUID,
-        nickname: Nickname,
-        bio: Bio?,
-    ): ProfileEntity
-
-    fun updateAvatarUrl(
-        userId: UUID,
-        avatarUrl: AvatarUrl,
-    ): ProfileEntity
-
-    fun deleteAvatarUrl(userId: UUID): ProfileEntity
 }

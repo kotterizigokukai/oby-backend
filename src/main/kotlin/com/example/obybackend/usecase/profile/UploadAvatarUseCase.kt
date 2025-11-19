@@ -1,5 +1,6 @@
 package com.example.obybackend.usecase.profile
 
+import com.example.obybackend.common.timestamp.TimestampGenerator
 import com.example.obybackend.domain.entity.ProfileEntity
 import com.example.obybackend.domain.exception.ProfileNotFoundException
 import com.example.obybackend.domain.exception.StorageException
@@ -14,12 +15,15 @@ import java.util.UUID
 
 /**
  * アバター画像アップロードユースケース
+ *
+ * ビジネスロジック（タイムスタンプ更新）を担当
  */
 @Service
 class UploadAvatarUseCase(
     private val profileRepository: ProfileRepository,
     private val storageService: StorageService,
     private val imageProcessor: ImageProcessor,
+    private val timestampGenerator: TimestampGenerator,
 ) {
     private val logger = LoggerFactory.getLogger(UploadAvatarUseCase::class.java)
 
@@ -57,14 +61,16 @@ class UploadAvatarUseCase(
 
         logger.info("Successfully uploaded new avatar: key=$key, userId=${input.userId}")
 
-        // 5. DBを更新
+        // 5. DBを更新（updatedAtを現在時刻に設定）
         val updatedProfile =
-            profileRepository.updateAvatarUrl(
-                userId = input.userId,
+            profile.copy(
                 avatarUrl = AvatarUrl(newUrl),
+                updatedAt = timestampGenerator.now(),
             )
 
-        return UploadAvatarOutput.from(updatedProfile)
+        val savedProfile = profileRepository.save(updatedProfile)
+
+        return UploadAvatarOutput.from(savedProfile)
     }
 }
 
