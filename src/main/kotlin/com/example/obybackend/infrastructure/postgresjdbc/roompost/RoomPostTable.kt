@@ -2,7 +2,7 @@ package com.example.obybackend.infrastructure.postgresjdbc.roompost
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Table
-import java.time.LocalDateTime
+import java.time.Instant
 import java.util.UUID
 
 /**
@@ -24,6 +24,6 @@ data class RoomPostTable(
     val title: String,
     val imageUrl: String,
     val description: String?,
-    val createdAt: LocalDateTime,
-    val updatedAt: LocalDateTime,
+    val createdAt: Instant,
+    val updatedAt: Instant,
 )

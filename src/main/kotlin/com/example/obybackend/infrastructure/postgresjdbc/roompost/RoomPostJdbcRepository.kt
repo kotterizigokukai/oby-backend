@@ -4,7 +4,7 @@ import org.springframework.data.jdbc.repository.query.Modifying
 import org.springframework.data.jdbc.repository.query.Query
 import org.springframework.data.repository.CrudRepository
 import org.springframework.data.repository.query.Param
-import java.time.LocalDateTime
+import java.time.Instant
 import java.util.UUID
 
 /**
@@ -55,8 +55,8 @@ interface RoomPostJdbcRepository : CrudRepository<RoomPostTable, UUID> {
         @Param("title") title: String,
         @Param("imageUrl") imageUrl: String,
         @Param("description") description: String?,
-        @Param("createdAt") createdAt: LocalDateTime,
-        @Param("updatedAt") updatedAt: LocalDateTime,
+        @Param("createdAt") createdAt: Instant,
+        @Param("updatedAt") updatedAt: Instant,
     )
 
     /**

@@ -1,9 +1,10 @@
 package com.example.obybackend.domain.entity
 
+import com.example.obybackend.common.timestamp.TimestampGenerator
 import com.example.obybackend.common.uuid.UuidGenerator
 import com.example.obybackend.domain.value.RoomPostDescription
 import com.example.obybackend.domain.value.RoomPostTitle
-import java.time.LocalDateTime
+import java.time.Instant
 import java.util.UUID
 
 /**
@@ -23,6 +24,6 @@ data class RoomPostEntity(
     val title: RoomPostTitle,
     val imageUrl: String,
     val description: RoomPostDescription?,
-    val createdAt: LocalDateTime = LocalDateTime.now(),
-    val updatedAt: LocalDateTime = LocalDateTime.now(),
+    val createdAt: Instant = TimestampGenerator().now(),
+    val updatedAt: Instant = TimestampGenerator().now(),
 )
