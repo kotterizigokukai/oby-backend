@@ -48,6 +48,7 @@ services:
       MINIO_BUCKET: ${MINIO_BUCKET:-oby-bucket}
     volumes:
       - ./docker/minio/init.sh:/init.sh
+      - ./docker/minio/test-images:/test-images
     entrypoint: /bin/sh
     command: /init.sh
 

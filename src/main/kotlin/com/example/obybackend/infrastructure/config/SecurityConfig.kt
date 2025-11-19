@@ -53,7 +53,9 @@ class SecurityConfig(
                     .requestMatchers("/actuator/health").permitAll()
                     // OAuth2認証エンドポイント
                     .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
-                    // API endpoints - 認証必須
+                    // 部屋投稿の閲覧は認証不要（GET）
+                    .requestMatchers("GET", "/api/v1/room-posts", "/api/v1/room-posts/*").permitAll()
+                    // API endpoints - その他は認証必須
                     .requestMatchers("/api/v1/**").authenticated()
                     // その他すべて認証必須
                     .anyRequest().authenticated()
