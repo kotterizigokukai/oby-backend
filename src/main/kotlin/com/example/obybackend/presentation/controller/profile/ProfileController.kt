@@ -1,8 +1,8 @@
 package com.example.obybackend.presentation.controller.profile
 
-import com.example.obybackend.domain.repository.UserRepository
 import com.example.obybackend.presentation.dto.profile.ProfileResponse
 import com.example.obybackend.presentation.dto.profile.UpdateProfileRequest
+import com.example.obybackend.presentation.util.OAuth2UserUtils
 import com.example.obybackend.presentation.validation.ImageFileValidator
 import com.example.obybackend.usecase.profile.DeleteAvatarUseCase
 import com.example.obybackend.usecase.profile.GetMyProfileUseCase
@@ -45,7 +45,7 @@ class ProfileController(
     private val uploadAvatarUseCase: UploadAvatarUseCase,
     private val deleteAvatarUseCase: DeleteAvatarUseCase,
     private val imageFileValidator: ImageFileValidator,
-    private val userRepository: UserRepository,
+    private val oauth2UserUtils: OAuth2UserUtils,
 ) {
     /**
      * U1: 自分のプロフィール取得
@@ -61,7 +61,7 @@ class ProfileController(
     fun getMyProfile(
         @AuthenticationPrincipal oauth2User: OAuth2User,
     ): ResponseEntity<ProfileResponse> {
-        val userId = extractUserIdFromOAuth2User(oauth2User)
+        val userId = oauth2UserUtils.extractUserId(oauth2User)
         val output = getMyProfileUseCase.execute(userId)
 
         return ResponseEntity.ok(ProfileResponse.from(output))
@@ -83,7 +83,7 @@ class ProfileController(
         @AuthenticationPrincipal oauth2User: OAuth2User,
         @RequestBody request: UpdateProfileRequest,
     ): ResponseEntity<ProfileResponse> {
-        val userId = extractUserIdFromOAuth2User(oauth2User)
+        val userId = oauth2UserUtils.extractUserId(oauth2User)
         val input =
             UpdateMyProfileInput(
                 userId = userId,
@@ -112,9 +112,9 @@ class ProfileController(
         @AuthenticationPrincipal oauth2User: OAuth2User,
         @RequestPart("avatar") file: MultipartFile,
     ): ResponseEntity<ProfileResponse> {
-        val userId = extractUserIdFromOAuth2User(oauth2User)
+        val userId = oauth2UserUtils.extractUserId(oauth2User)
 
-        // 早期バリデーション: MIME type, 拡張子, ファイルサイズをチェック
+        // 早期バリデーション: MIME type, ファイルサイズをチェック
         imageFileValidator.validate(file)
 
         val input =
@@ -142,7 +142,7 @@ class ProfileController(
     fun deleteAvatar(
         @AuthenticationPrincipal oauth2User: OAuth2User,
     ): ResponseEntity<ProfileResponse> {
-        val userId = extractUserIdFromOAuth2User(oauth2User)
+        val userId = oauth2UserUtils.extractUserId(oauth2User)
         val output = deleteAvatarUseCase.execute(userId)
 
         return ResponseEntity.ok(ProfileResponse.from(output))
@@ -167,18 +167,4 @@ class ProfileController(
         return ResponseEntity.ok(ProfileResponse.from(output))
     }
 
-    /**
-     * OAuth2UserからユーザーIDを取得
-     */
-    private fun extractUserIdFromOAuth2User(oauth2User: OAuth2User): UUID {
-        val googleSub =
-            oauth2User.getAttribute<String>("sub")
-                ?: throw IllegalStateException("Google sub not found in OAuth2User")
-
-        val user =
-            userRepository.findByGoogleSub(googleSub)
-                ?: throw IllegalStateException("User not found for Google sub: $googleSub")
-
-        return user.id
-    }
 }

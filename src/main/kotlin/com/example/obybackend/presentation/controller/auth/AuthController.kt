@@ -1,7 +1,7 @@
 package com.example.obybackend.presentation.controller.auth
 
-import com.example.obybackend.domain.repository.UserRepository
 import com.example.obybackend.presentation.dto.auth.UserResponse
+import com.example.obybackend.presentation.util.OAuth2UserUtils
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/api/v1/auth")
 @Tag(name = "Auth", description = "認証管理API")
 class AuthController(
-    private val userRepository: UserRepository,
+    private val oauth2UserUtils: OAuth2UserUtils,
 ) {
     /**
      * 現在ログイン中のユーザー情報を取得
@@ -43,13 +43,7 @@ class AuthController(
     fun getCurrentUser(
         @AuthenticationPrincipal oauth2User: OAuth2User,
     ): ResponseEntity<UserResponse> {
-        val googleSub =
-            oauth2User.getAttribute<String>("sub")
-                ?: return ResponseEntity.status(401).build()
-
-        val user =
-            userRepository.findByGoogleSub(googleSub)
-                ?: return ResponseEntity.status(404).build()
+        val user = oauth2UserUtils.extractUser(oauth2User)
 
         return ResponseEntity.ok(
             UserResponse(
