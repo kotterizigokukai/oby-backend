@@ -29,7 +29,7 @@ interface RoomPostJdbcRepository : CrudRepository<RoomPostTable, UUID> {
     @Query(
         """
         SELECT * FROM room_posts
-        WHERE (:cursor IS NULL OR id < :cursor)
+        WHERE (:cursor::uuid IS NULL OR id < :cursor::uuid)
         ORDER BY id DESC
         LIMIT :limit
         """,
