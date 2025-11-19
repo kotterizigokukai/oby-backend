@@ -19,7 +19,7 @@ import java.util.UUID
 @Table("profiles")
 data class ProfileTable(
     @Id
-    val id: UUID?,
+    val id: UUID,
     val userId: UUID,
     val nickname: String,
     val avatarUrl: String?,

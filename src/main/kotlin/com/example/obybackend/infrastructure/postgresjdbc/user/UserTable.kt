@@ -17,7 +17,7 @@ import java.util.UUID
 @Table("users")
 data class UserTable(
     @Id
-    val id: UUID?,
+    val id: UUID,
     val googleSub: String,
     val email: String,
     val createdAt: LocalDateTime,

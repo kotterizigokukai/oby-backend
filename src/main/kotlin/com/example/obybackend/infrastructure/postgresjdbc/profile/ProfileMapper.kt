@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component
 class ProfileMapper {
     fun toDomain(table: ProfileTable): ProfileEntity {
         return ProfileEntity(
-            id = table.id ?: throw IllegalStateException("Profile ID must not be null"),
+            id = table.id,
             userId = table.userId,
             nickname = Nickname(table.nickname),
             avatarUrl = table.avatarUrl?.let { AvatarUrl(it) },

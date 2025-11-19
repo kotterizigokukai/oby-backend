@@ -36,6 +36,9 @@ dependencies {
     implementation("io.minio:minio:8.5.7")
     implementation("com.amazonaws:aws-java-sdk-s3:1.12.600")
 
+    // UUID v7 generator
+    implementation("com.github.f4b6a3:uuid-creator:6.1.0")
+
     runtimeOnly("org.postgresql:postgresql")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")

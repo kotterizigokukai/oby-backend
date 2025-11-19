@@ -171,11 +171,13 @@ class ProfileController(
      * OAuth2UserからユーザーIDを取得
      */
     private fun extractUserIdFromOAuth2User(oauth2User: OAuth2User): UUID {
-        val googleSub = oauth2User.getAttribute<String>("sub")
-            ?: throw IllegalStateException("Google sub not found in OAuth2User")
+        val googleSub =
+            oauth2User.getAttribute<String>("sub")
+                ?: throw IllegalStateException("Google sub not found in OAuth2User")
 
-        val user = userRepository.findByGoogleSub(googleSub)
-            ?: throw IllegalStateException("User not found for Google sub: $googleSub")
+        val user =
+            userRepository.findByGoogleSub(googleSub)
+                ?: throw IllegalStateException("User not found for Google sub: $googleSub")
 
         return user.id
     }

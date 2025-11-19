@@ -43,11 +43,13 @@ class AuthController(
     fun getCurrentUser(
         @AuthenticationPrincipal oauth2User: OAuth2User,
     ): ResponseEntity<UserResponse> {
-        val googleSub = oauth2User.getAttribute<String>("sub")
-            ?: return ResponseEntity.status(401).build()
+        val googleSub =
+            oauth2User.getAttribute<String>("sub")
+                ?: return ResponseEntity.status(401).build()
 
-        val user = userRepository.findByGoogleSub(googleSub)
-            ?: return ResponseEntity.status(404).build()
+        val user =
+            userRepository.findByGoogleSub(googleSub)
+                ?: return ResponseEntity.status(404).build()
 
         return ResponseEntity.ok(
             UserResponse(

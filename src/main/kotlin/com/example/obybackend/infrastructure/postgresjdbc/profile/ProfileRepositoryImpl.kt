@@ -25,7 +25,7 @@ class ProfileRepositoryImpl(
     override fun save(profile: ProfileEntity): ProfileEntity {
         val table = mapper.toTable(profile)
         profileJdbcRepository.upsert(
-            id = table.id ?: UUID.randomUUID(),
+            id = table.id,
             userId = table.userId,
             nickname = table.nickname,
             avatarUrl = table.avatarUrl,
@@ -48,7 +48,7 @@ class ProfileRepositoryImpl(
                 ?: throw ProfileNotFoundException(userId.toString())
 
         profileJdbcRepository.upsert(
-            id = existing.id ?: throw IllegalStateException("Profile ID must not be null"),
+            id = existing.id,
             userId = existing.userId,
             nickname = nickname.value,
             avatarUrl = existing.avatarUrl,
@@ -70,7 +70,7 @@ class ProfileRepositoryImpl(
                 ?: throw ProfileNotFoundException(userId.toString())
 
         profileJdbcRepository.upsert(
-            id = existing.id ?: throw IllegalStateException("Profile ID must not be null"),
+            id = existing.id,
             userId = existing.userId,
             nickname = existing.nickname,
             avatarUrl = avatarUrl.value,
@@ -89,7 +89,7 @@ class ProfileRepositoryImpl(
                 ?: throw ProfileNotFoundException(userId.toString())
 
         profileJdbcRepository.upsert(
-            id = existing.id ?: throw IllegalStateException("Profile ID must not be null"),
+            id = existing.id,
             userId = existing.userId,
             nickname = existing.nickname,
             avatarUrl = null,

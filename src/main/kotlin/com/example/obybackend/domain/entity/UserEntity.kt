@@ -1,5 +1,6 @@
 package com.example.obybackend.domain.entity
 
+import com.example.obybackend.common.uuid.UuidGenerator
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -13,9 +14,9 @@ import java.util.UUID
  * @property updatedAt 更新日時
  */
 data class UserEntity(
-    val id: UUID,
+    val id: UUID = UuidGenerator.generate(),
     val googleSub: String,
     val email: String,
-    val createdAt: LocalDateTime,
-    val updatedAt: LocalDateTime,
+    val createdAt: LocalDateTime = LocalDateTime.now(),
+    val updatedAt: LocalDateTime = LocalDateTime.now(),
 )

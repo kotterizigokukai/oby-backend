@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component
 class UserMapper {
     fun toDomain(table: UserTable): UserEntity {
         return UserEntity(
-            id = table.id ?: throw IllegalStateException("User ID must not be null"),
+            id = table.id,
             googleSub = table.googleSub,
             email = table.email,
             createdAt = table.createdAt,

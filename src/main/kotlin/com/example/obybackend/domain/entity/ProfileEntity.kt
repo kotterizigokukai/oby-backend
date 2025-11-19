@@ -1,5 +1,6 @@
 package com.example.obybackend.domain.entity
 
+import com.example.obybackend.common.uuid.UuidGenerator
 import com.example.obybackend.domain.value.AvatarUrl
 import com.example.obybackend.domain.value.Bio
 import com.example.obybackend.domain.value.Nickname
@@ -18,11 +19,11 @@ import java.util.UUID
  * @property updatedAt 更新日時
  */
 data class ProfileEntity(
-    val id: UUID,
+    val id: UUID = UuidGenerator.generate(),
     val userId: UUID,
     val nickname: Nickname,
     val avatarUrl: AvatarUrl?,
     val bio: Bio?,
-    val createdAt: LocalDateTime,
-    val updatedAt: LocalDateTime,
+    val createdAt: LocalDateTime = LocalDateTime.now(),
+    val updatedAt: LocalDateTime = LocalDateTime.now(),
 )

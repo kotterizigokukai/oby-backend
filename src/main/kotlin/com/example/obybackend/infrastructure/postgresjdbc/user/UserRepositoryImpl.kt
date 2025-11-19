@@ -29,7 +29,7 @@ class UserRepositoryImpl(
     override fun save(user: UserEntity): UserEntity {
         val table = mapper.toTable(user)
         userJdbcRepository.upsert(
-            id = table.id ?: UUID.randomUUID(),
+            id = table.id,
             googleSub = table.googleSub,
             email = table.email,
             createdAt = table.createdAt,
@@ -49,7 +49,7 @@ class UserRepositoryImpl(
                 ?: throw IllegalStateException("User not found: $id")
 
         userJdbcRepository.upsert(
-            id = existing.id ?: throw IllegalStateException("User ID must not be null"),
+            id = existing.id,
             googleSub = existing.googleSub,
             email = email,
             createdAt = existing.createdAt,
